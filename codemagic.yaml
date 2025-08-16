@@ -1,23 +1,20 @@
 workflows:
-  ios-workflow:
-    name: iOS DurakAI Build
+  ios-app:
+    name: Build unsigned .ipa
     environment:
-      xcode: 16.0
-      vars:
-        XCODE_PROJECT: "DurakAI.xcodeproj"
-        XCODE_SCHEME: "DurakAI"
+      xcode: latest
+      cocoapods: default
     scripts:
-      - name: Build archive
+      - name: Build .ipa
         script: |
           xcodebuild \
-            -project "$XCODE_PROJECT" \
-            -scheme "$XCODE_SCHEME" \
+            -project "DurakAI.xcodeproj" \
+            -scheme "DurakAI" \
             -sdk iphoneos \
             -configuration Release \
             -archivePath $CM_BUILD_DIR/DurakAI.xcarchive \
             archive
-      - name: Export IPA
-        script: |
+
           xcodebuild \
             -exportArchive \
             -archivePath $CM_BUILD_DIR/DurakAI.xcarchive \
@@ -25,12 +22,3 @@ workflows:
             -exportPath $CM_BUILD_DIR/ipa
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
-      - $CM_BUILD_DIR/ipa/*.dSYM.zip
-      - $CM_BUILD_DIR/ipa/*.app
-    publishing:
-      email:
-        recipients:
-          - your_email@example.com
-        notify:
-          success: true
-          failure: true
