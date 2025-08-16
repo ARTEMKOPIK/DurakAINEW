@@ -1,11 +1,11 @@
 workflows:
-  ios-app:
-    name: Build unsigned .ipa
+  build_ipa:
+    name: Build unsigned IPA
+    max_build_duration: 60
     environment:
       xcode: latest
-      cocoapods: default
     scripts:
-      - name: Build .ipa
+      - name: Build archive (no signing)
         script: |
           xcodebuild \
             -project "DurakAI.xcodeproj" \
@@ -13,12 +13,16 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             -archivePath $CM_BUILD_DIR/DurakAI.xcarchive \
-            archive
+            archive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
+      - name: Export IPA (no signing)
+        script: |
           xcodebuild \
             -exportArchive \
             -archivePath $CM_BUILD_DIR/DurakAI.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
-            -exportPath $CM_BUILD_DIR/ipa
+            -exportPath $CM_BUILD_DIR/ipa \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
